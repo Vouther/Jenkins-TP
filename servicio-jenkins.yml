@@ -1,0 +1,79 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: cbii-lotes-jenkins
+  namespace: CLOUDSDK_CORE_PROJECT
+spec:
+  template:
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: 579436120902-compute@developer.gserviceaccount.com
+      containers:
+      - name: felsv-spring-cloud-spring-service-1
+        image:  consiti/felsv-spring-cloud-spring-service:Prueba3
+        ports:
+        - name: http1
+          containerPort: 8080
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+        startupProbe:
+          timeoutSeconds: 240
+          periodSeconds: 240
+          failureThreshold: 1
+          tcpSocket:
+            port: 8080
+        env:
+        - name: FIRMADOR_URL
+          value: SERVICE_FIRMADOR_URL
+        - name: SERVER_PORT
+          value: '8080'
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: '1'
+              name: JWT_SECRET_DEV
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              key: '1'
+              name: DATABASE_URL_TST
+        - name: DATABASE_NAME
+          valueFrom:
+            secretKeyRef:
+              key: '1'
+              name: DATABASE_NAME_DEV
+        - name: HACIENDA_URL
+          valueFrom:
+            secretKeyRef:
+              key: '1'
+              name: HACIENDA_URL_DEV
+        - name: CRYPTO_KEY
+          valueFrom:
+            secretKeyRef:
+              key: '1'
+              name: CRYPTO_KEY_DEV
+        - name: CRYPTO_NEST
+          valueFrom:
+            secretKeyRef:
+              key: '1'
+              name: CRYPTO_NEST_DEV
+
+      # - name: svfe-api-firmador-1
+      #   image: svfe/svfe-api-firmador:v20230109
+      #   resources:
+      #     limits:
+      #       cpu: 1000m
+      #       memory: 512Mi
+      #   volumeMounts:
+      #   - name: certifados
+      #     mountPath: /uploads
+      # volumes:
+      # - name: certifados
+      #   csi:
+      #     driver: gcsfuse.run.googleapis.com
+      #     readOnly: true
+      #     volumeAttributes:
+      #       bucketName: certifados_prod
